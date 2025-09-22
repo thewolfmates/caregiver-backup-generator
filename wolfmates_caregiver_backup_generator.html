@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wolfmates Caregiver Backup Generator</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%236BCB77'/><path d='M35 40c0-8 6-14 14-14s14 6 14 14c0 10-14 20-14 20s-14-10-14-20z' fill='white'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background: linear-gradient(135deg, #f8fbff 0%, #f0f9f1 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(46, 134, 171, 0.1);
+        }
+
+        .wolfmates-logo {
+            width: 120px;
+            height: auto;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        h1 {
+            color: #2E86AB;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(46, 134, 171, 0.08);
+            border: 1px solid #e8f4f8;
+        }
+
+        .section h2 {
+            color: #2E86AB;
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 35px;
+            height: 35px;
+            background: #6BCB77;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .provider-card {
+            border: 2px solid #e8f4f8;
+            border-radius: 12px;
+            padding: 25px;
+            background: #fafcfd;
+            position: relative;
+        }
+
+        .provider-card h3 {
+            color: #2E86AB;
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .optional-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #6BCB77;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(25px);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2E86AB;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"], input[type="time"], input[type="date"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e8f4f8;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #6BCB77;
+            box-shadow: 0 0 0 3px rgba(107, 203, 119, 0.1);
+        }
+
+        .days-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .day-checkbox {
+            position: relative;
+        }
+
+        .day-checkbox input {
+            display: none;
+        }
+
+        .day-checkbox label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 35px;
+            background: #f8f9fa;
+            border: 2px solid #e8f4f8;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+        }
+
+        .day-checkbox input:checked + label {
+            background: #6BCB77;
+            border-color: #6BCB77;
+            color: white;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #6BCB77, #5ab368);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 203, 119, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2E86AB;
+            border: 2px solid #2E86AB;
+        }
+
+        .btn-secondary:hover {
+            background: #2E86AB;
+            color: white;
+        }
+
+        .btn-large {
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .plan-header {
+            background: linear-gradient(135deg, #2E86AB, #6BCB77);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .plan-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .plan-table th {
+            background: #2E86AB;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .plan-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .plan-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .coverage-good {
+            background: #d4edda;
+            color: #155724;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .coverage-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .coverage-danger {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .gap-alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #6BCB77, #5ab368);
+            color: white;
+            text-align: center;
+            border-radius: 15px;
+            padding: 35px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
+        }
+
+        .cta-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-white {
+            background: white;
+            color: #6BCB77;
+            border: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-white:hover {
+            background: #f8f9fa;
+            color: #5ab368;
+            transform: translateY(-2px);
+        }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.5;
+            padding: 25px;
+            border-top: 1px solid #e8f4f8;
+            margin-top: 40px;
+            background: #fafcfd;
+            border-radius: 10px;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .time-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .days-selector {
+                justify-content: center;
+            }
+
+            .plan-table {
+                font-size: 0.9rem;
+            }
+
+            .plan-table th,
+            .plan-table td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .section {
+                padding: 15px;
+            }
+
+            .wolfmates-logo {
+                width: 100px;
+            }
+        }
+
+        /* Print styles for PDF */
+        @media print {
+            .header, .form-section, .cta-section, .disclaimer, .button-group {
+                display: none !important;
+            }
+
+            .results-section {
+                display: block !important;
+            }
+
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                margin-bottom: 20px;
+                break-inside: avoid;
+            }
+
+            body {
+                background: white;
+                font-size: 12px;
+                line-height: 1.4;
+            }
+
+            .plan-table {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="https://scontent-lga3-2.xx.fbcdn.net/v/t39.30808-6/505898327_122096913218909014_895870580818095988_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=qJuU8REosQ0Q7kNvwGDp_z2&_nc_oc=AdkZf5jGpJ5kf86umMyfVXfIvGJZEHvgd6zP_9rWZ6NmghJZEuUrmTM908vfo39J6ewRsquUJTr47uK3fwCzwqTj&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&_nc_gid=2uWckhUspixvUmsRd6tA6Q&oh=00_AfZdtvUfuEOzTi0VEWefJjP4-21aaxXJUiccBrABbvTRNA&oe=68D6928C" alt="Wolfmates Logo" class="wolfmates-logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNTUiIGZpbGw9IiM2QkNCNzciLz48cGF0aCBkPSJNNDAgNDBjMC04IDYtMTQgMTQtMTRzMTQgNiAxNCAxNGMwIDEwLTE0IDIwLTE0IDIwcy0xNC0xMC0xNC0yMHoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTcwIDM1cTEwIDEwIDEwIDI1cS01IDEwLTE1IDEwcS0xMC01LTEwLTE1cTAtMTAgMTUtMTUiIGZpbGw9IndoaXRlIi8+PHRleHQgeD0iNjAiIHk9IjEwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPldNPC90ZXh0Pjwvc3ZnPg=='">
+            <h1>Wolfmates Caregiver Backup Generator</h1>
+            <p class="subtitle">Create a simple backup plan to keep your family covered when caregivers or providers cancel</p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="section form-section">
+            <h2>
+                <span class="section-icon">1</span>
+                Enter Your Providers' Details
+            </h2>
+            
+            <form id="backupForm">
+                <!-- Global Settings -->
+                <div class="provider-card" style="background: #f0f9f1; border-color: #6BCB77;">
+                    <h3>📅 Plan Settings</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="family-timezone">Family's Time Zone <span class="required">*</span></label>
+                            <select id="family-timezone" name="familyTimezone" required>
+                                <option value="">Select time zone...</option>
+                                <option value="America/New_York">Eastern Time (EST/EDT)</option>
+                                <option value="America/Chicago">Central Time (CST/CDT)</option>
+                                <option value="America/Denver">Mountain Time (MST/MDT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PST/PDT)</option>
+                                <option value="America/Phoenix">Arizona Time (MST)</option>
+                                <option value="America/Anchorage">Alaska Time (AKST/AKDT)</option>
+                                <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
+                                <option value="UTC">UTC</option>
+                                <option value="Europe/London">London Time (GMT/BST)</option>
+                                <option value="Europe/Paris">Central European Time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date-range">Plan Duration</label>
+                            <select id="date-range" name="dateRange">
+                                <option value="7">Next 7 days</option>
+                                <option value="14">Next 2 weeks</option>
+                                <option value="30">Next month</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Provider -->
+                <div class="provider-card">
+                    <h3>👤 Primary Caregiver/Vendor <span class="required">*</span></h3>
+                    <div class="form-group">
+                        <label for="primary-name">Name <span class="required">*</span></label>
+                        <input type="text" id="primary-name" name="primaryName" required placeholder="e.g., Sarah Johnson">
+                    </div>
+                    <div class="form-group">
+                        <label>Available Days <span class="required">*</span></label>
+                        <div class="days-selector">
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="primary-mon" name="primaryDays" value="1">
+                                <label for="primary-mon">Mon</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="primary-tue" name="primaryDays" value="2">
+                                <label for="primary-tue">Tue</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="primary-wed" name="primaryDays" value="3">
+                                <label for="primary-wed">Wed</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="primary-thu" name="primaryDays" value="4">
+                                <label for="primary-thu">Thu</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="primary-fri" name="primaryDays" value="5">
+                                <label for="primary-fri">Fri</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="primary-sat" name="primaryDays" value="6">
+                                <label for="primary-sat">Sat</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="primary-sun" name="primaryDays" value="0">
+                                <label for="primary-sun">Sun</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Time Range <span class="required">*</span></label>
+                            <div class="time-inputs">
+                                <input type="time" id="primary-start" name="primaryStart" required>
+                                <input type="time" id="primary-end" name="primaryEnd" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="primary-timezone">Provider's Time Zone <span class="required">*</span></label>
+                            <select id="primary-timezone" name="primaryTimezone" required>
+                                <option value="">Select time zone...</option>
+                                <option value="America/New_York">Eastern Time (EST/EDT)</option>
+                                <option value="America/Chicago">Central Time (CST/CDT)</option>
+                                <option value="America/Denver">Mountain Time (MST/MDT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PST/PDT)</option>
+                                <option value="America/Phoenix">Arizona Time (MST)</option>
+                                <option value="America/Anchorage">Alaska Time (AKST/AKDT)</option>
+                                <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
+                                <option value="UTC">UTC</option>
+                                <option value="Europe/London">London Time (GMT/BST)</option>
+                                <option value="Europe/Paris">Central European Time</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Provider -->
+                <div class="provider-card">
+                    <h3>👤 Secondary Caregiver/Vendor</h3>
+                    <div class="form-group">
+                        <label for="secondary-name">Name</label>
+                        <input type="text" id="secondary-name" name="secondaryName" placeholder="e.g., Maria Rodriguez">
+                    </div>
+                    <div class="form-group">
+                        <label>Available Days</label>
+                        <div class="days-selector">
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="secondary-mon" name="secondaryDays" value="1">
+                                <label for="secondary-mon">Mon</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="secondary-tue" name="secondaryDays" value="2">
+                                <label for="secondary-tue">Tue</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="secondary-wed" name="secondaryDays" value="3">
+                                <label for="secondary-wed">Wed</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="secondary-thu" name="secondaryDays" value="4">
+                                <label for="secondary-thu">Thu</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="secondary-fri" name="secondaryDays" value="5">
+                                <label for="secondary-fri">Fri</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="secondary-sat" name="secondaryDays" value="6">
+                                <label for="secondary-sat">Sat</label>
+                            </div>
+                            <div class="day-checkbox">
+                                <input type="checkbox" id="secondary-sun" name="secondaryDays" value="0">
+                                <label for="secondary-sun">Sun</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Time Range</label>
+                            <div class="time-inputs">
+                                <input type="time" id="secondary-start" name="secondaryStart">
+                                <input type="time" id="secondary-end" name="secondaryEnd">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="secondary-timezone">Provider's Time Zone</label>
+                            <select id="secondary-timezone" name="secondaryTimezone">
+                                <option value="">Select time zone...</option>
+                                <option value="America/New_York">Eastern Time (EST/EDT)</option>
+                                <option value="America/Chicago">Central Time (CST/CDT)</option>
+                                <option value="America/Denver">Mountain Time (MST/MDT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PST/PDT)</option>
+                                <option value="America/Phoenix">Arizona Time (MST)</option>
+                                <option value="America/Anchorage">Alaska Time (AKST/AKDT)</option>
+                                <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
+                                <option value="UTC">UTC</option>
+                                <option value="Europe/London">London Time (GMT/BST)</option>
+                                <option value="Europe/Paris">Central European Time</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Third Provider -->
+                <div class="provider-card">
+                    <div class="optional-toggle">
+                        <div class="toggle-switch" id="third-toggle">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <h3>👤 Third Caregiver/Vendor (Optional)</h3>
+                    </div>
+                    <div id="third-provider-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="third-name">Name</label>
+                            <input type="text" id="third-name" name="thirdName" placeholder="e.g., Emergency Home Care Service">
+                        </div>
+                        <div class="form-group">
+                            <label>Available Days</label>
+                            <div class="days-selector">
+                                <div class="day-checkbox">
+                                    <input type="checkbox" id="third-mon" name="thirdDays" value="1">
+                                    <label for="third-mon">Mon</label>
+                                </div>
+                                <div class="day-checkbox">
+                                    <input type="checkbox" id="third-tue" name="thirdDays" value="2">
+                                    <label for="third-tue">Tue</label>
+                                </div>
+                                <div class="day-checkbox">
+                                    <input type="checkbox" id="third-wed" name="thirdDays" value="3">
+                                    <label for="third-wed">Wed</label>
+                                </div>
+                                <div class="day-checkbox">
+                                    <input type="checkbox" id="third-thu" name="thirdDays" value="4">
+                                    <label for="third-thu">Thu</label>
+                                </div>
+                                <div class="day-checkbox">
+                                    <input type="checkbox" id="third-fri" name="thirdDays" value="5">
+                                    <label for="third-fri">Fri</label>
+                                </div>
+                                <div class="day-checkbox">
+                                    <input type="checkbox" id="third-sat" name="thirdDays" value="6">
+                                    <label for="third-sat">Sat</label>
+                                </div>
+                                <div class="day-checkbox">
+                                    <input type="checkbox" id="third-sun" name="thirdDays" value="0">
+                                    <label for="third-sun">Sun</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Time Range</label>
+                                <div class="time-inputs">
+                                    <input type="time" id="third-start" name="thirdStart">
+                                    <input type="time" id="third-end" name="thirdEnd">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="third-timezone">Provider's Time Zone</label>
+                                <select id="third-timezone" name="thirdTimezone">
+                                    <option value="">Select time zone...</option>
+                                    <option value="America/New_York">Eastern Time (EST/EDT)</option>
+                                    <option value="America/Chicago">Central Time (CST/CDT)</option>
+                                    <option value="America/Denver">Mountain Time (MST/MDT)</option>
+                                    <option value="America/Los_Angeles">Pacific Time (PST/PDT)</option>
+                                    <option value="America/Phoenix">Arizona Time (MST)</option>
+                                    <option value="America/Anchorage">Alaska Time (AKST/AKDT)</option>
+                                    <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
+                                    <option value="UTC">UTC</option>
+                                    <option value="Europe/London">London Time (GMT/BST)</option>
+                                    <option value="Europe/Paris">Central European Time</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-message" id="form-error"></div>
+
+                <button type="submit" class="btn btn-large" id="generate-btn">
+                    <span id="btn-text">Generate Backup Plan</span>
+                    <div class="loading-spinner" id="loading-spinner"></div>
+                </button>
+
+                <button type="button" class="btn btn-secondary" id="reset-btn" style="margin-left: 15px;">
+                    Reset Form
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div class="section results-section" id="resultsSection">
+            <h2>
+                <span class="section-icon">2</span>
+                Your Backup Plan
+            </h2>
+            
+            <div class="plan-header">
+                <h3 id="plan-title">Backup Plan Summary</h3>
+                <p id="plan-subtitle">Generated for the next 7 days</p>
+            </div>
+
+            <div id="backup-plan-content">
+                <!-- Plan content will be inserted here -->
+            </div>
+
+            <div class="button-group">
+                <button onclick="downloadPDF()" class="btn btn-secondary">📄 Download as PDF</button>
+                <button onclick="exportCSV()" class="btn btn-secondary">📊 Export to CSV</button>
+                <button onclick="editPlan()" class="btn btn-secondary">✏️ Edit Plan</button>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section" id="ctaSection" style="display: none;">
+            <h3>Want this backup plan to update automatically?</h3>
+            <p>Get real-time scheduling, instant alerts for cancellations, and AI-suggested replacements with Wolfmates.</p>
+            <a href="https://www.wolfmates.com" class="btn btn-white btn-large" target="_blank">
+                Start Free Trial
+                <span style="font-size: 0.9rem; opacity: 0.8;">7 days • No credit card</span>
+            </a>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> This tool is for informational planning purposes only and does not guarantee provider availability or real-time updates. Wolfmates does not employ, vet, or manage providers or vendors. For comprehensive coverage, automated continuity, detailed reporting, and liability protections, subscribe to Wolfmates at <a href="https://www.wolfmates.com" style="color: #2E86AB;">www.wolfmates.com</a>.</p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentPlan = null;
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayAbbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeForm();
+            setupEventListeners();
+        });
+
+        function initializeForm() {
+            // Set default family timezone to user's timezone
+            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const familyTimezoneSelect = document.getElementById('family-timezone');
+            
+            // Try to match user's timezone with available options
+            for (let option of familyTimezoneSelect.options) {
+                if (option.value === userTimezone) {
+                    option.selected = true;
+                    break;
+                }
+            }
+        }
+
+        function setupEventListeners() {
+            // Form submission
+            document.getElementById('backupForm').addEventListener('submit', handleFormSubmit);
+
+            // Reset button
+            document.getElementById('reset-btn').addEventListener('click', resetForm);
+
+            // Third provider toggle
+            document.getElementById('third-toggle').addEventListener('click', toggleThirdProvider);
+
+            // Remove live validation - only validate on submit
+        }
+
+        function toggleThirdProvider() {
+            const toggle = document.getElementById('third-toggle');
+            const fields = document.getElementById('third-provider-fields');
+            
+            toggle.classList.toggle('active');
+            if (toggle.classList.contains('active')) {
+                fields.style.display = 'block';
+            } else {
+                fields.style.display = 'none';
+                // Clear third provider fields
+                clearThirdProviderFields();
+            }
+        }
+
+        function clearThirdProviderFields() {
+            document.getElementById('third-name').value = '';
+            document.getElementById('third-start').value = '';
+            document.getElementById('third-end').value = '';
+            document.getElementById('third-timezone').value = '';
+            document.querySelectorAll('input[name="thirdDays"]').forEach(cb => cb.checked = false);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            showLoading(true);
+            
+            // Simulate processing delay for better UX
+            setTimeout(() => {
+                try {
+                    generateBackupPlan();
+                    showLoading(false);
+                } catch (error) {
+                    console.error('Plan generation error:', error);
+                    showError(`An error occurred while generating the plan: ${error.message || 'Unknown error'}. Please try again.`);
+                    showLoading(false);
+                }
+            }, 1500);
+        }
+
+        function validateForm() {
+            const errors = [];
+            
+            // Required fields
+            if (!document.getElementById('primary-name').value.trim()) {
+                errors.push('Primary caregiver name is required');
+            }
+            
+            if (!document.getElementById('family-timezone').value) {
+                errors.push('Family time zone is required');
+            }
+            
+            if (!document.getElementById('primary-timezone').value) {
+                errors.push('Primary caregiver time zone is required');
+            }
+            
+            // Check if at least one day is selected for primary
+            const primaryDays = document.querySelectorAll('input[name="primaryDays"]:checked');
+            if (primaryDays.length === 0) {
+                errors.push('Select at least one available day for primary caregiver');
+            }
+            
+            // Time validation for primary
+            const primaryStart = document.getElementById('primary-start').value;
+            const primaryEnd = document.getElementById('primary-end').value;
+            if (!primaryStart || !primaryEnd) {
+                errors.push('Primary caregiver time range is required');
+            } else if (primaryStart >= primaryEnd) {
+                errors.push('Primary caregiver start time must be before end time');
+            }
+            
+            // Secondary provider validation (if filled)
+            const secondaryName = document.getElementById('secondary-name').value.trim();
+            if (secondaryName) {
+                const secondaryDays = document.querySelectorAll('input[name="secondaryDays"]:checked');
+                const secondaryStart = document.getElementById('secondary-start').value;
+                const secondaryEnd = document.getElementById('secondary-end').value;
+                const secondaryTz = document.getElementById('secondary-timezone').value;
+                
+                if (secondaryDays.length === 0) {
+                    errors.push('Select available days for secondary caregiver');
+                }
+                if (!secondaryStart || !secondaryEnd) {
+                    errors.push('Secondary caregiver time range is required');
+                } else if (secondaryStart >= secondaryEnd) {
+                    errors.push('Secondary caregiver start time must be before end time');
+                }
+                if (!secondaryTz) {
+                    errors.push('Secondary caregiver time zone is required');
+                }
+            }
+            
+            // Third provider validation (if enabled and filled)
+            const thirdToggle = document.getElementById('third-toggle');
+            if (thirdToggle.classList.contains('active')) {
+                const thirdName = document.getElementById('third-name').value.trim();
+                if (thirdName) {
+                    const thirdDays = document.querySelectorAll('input[name="thirdDays"]:checked');
+                    const thirdStart = document.getElementById('third-start').value;
+                    const thirdEnd = document.getElementById('third-end').value;
+                    const thirdTz = document.getElementById('third-timezone').value;
+                    
+                    if (thirdDays.length === 0) {
+                        errors.push('Select available days for third caregiver');
+                    }
+                    if (!thirdStart || !thirdEnd) {
+                        errors.push('Third caregiver time range is required');
+                    } else if (thirdStart >= thirdEnd) {
+                        errors.push('Third caregiver start time must be before end time');
+                    }
+                    if (!thirdTz) {
+                        errors.push('Third caregiver time zone is required');
+                    }
+                }
+            }
+            
+            if (errors.length > 0) {
+                showError(errors.join('<br>'));
+                return false;
+            } else {
+                hideError();
+                return true;
+            }
+        }
+
+        function generateBackupPlan() {
+            try {
+                const formData = collectFormData();
+                const planDuration = parseInt(formData.dateRange);
+                const familyTz = formData.familyTimezone;
+                
+                // Check if Moment.js is available
+                if (typeof moment === 'undefined') {
+                    throw new Error('Time zone library not loaded. Please refresh the page.');
+                }
+                
+                // Generate plan for each day
+                const planData = [];
+                const today = moment().tz ? moment().tz(familyTz) : moment(); // Fallback if timezone not available
+                
+                for (let i = 0; i < planDuration; i++) {
+                    const date = today.clone().add(i, 'days');
+                    const dayOfWeek = date.day();
+                    const dayData = analyzeDayCoverage(date, dayOfWeek, formData, familyTz);
+                    planData.push(dayData);
+                }
+                
+                currentPlan = {
+                    formData: formData,
+                    planData: planData,
+                    generatedAt: today.format ? today.format('MMMM Do, YYYY [at] h:mm A') : new Date().toLocaleString()
+                };
+                
+                displayBackupPlan(currentPlan);
+            } catch (error) {
+                console.error('Error in generateBackupPlan:', error);
+                throw error;
+            }
+        }
+
+        function collectFormData() {
+            return {
+                // Global settings
+                familyTimezone: document.getElementById('family-timezone').value || '',
+                dateRange: document.getElementById('date-range').value || '7',
+                
+                // Primary provider
+                primaryName: document.getElementById('primary-name').value.trim() || '',
+                primaryDays: Array.from(document.querySelectorAll('input[name="primaryDays"]:checked')).map(cb => parseInt(cb.value)),
+                primaryStart: document.getElementById('primary-start').value || '',
+                primaryEnd: document.getElementById('primary-end').value || '',
+                primaryTimezone: document.getElementById('primary-timezone').value || '',
+                
+                // Secondary provider
+                secondaryName: document.getElementById('secondary-name').value.trim() || '',
+                secondaryDays: Array.from(document.querySelectorAll('input[name="secondaryDays"]:checked')).map(cb => parseInt(cb.value)),
+                secondaryStart: document.getElementById('secondary-start').value || '',
+                secondaryEnd: document.getElementById('secondary-end').value || '',
+                secondaryTimezone: document.getElementById('secondary-timezone').value || '',
+                
+                // Third provider
+                thirdEnabled: document.getElementById('third-toggle').classList.contains('active'),
+                thirdName: document.getElementById('third-name').value.trim() || '',
+                thirdDays: Array.from(document.querySelectorAll('input[name="thirdDays"]:checked')).map(cb => parseInt(cb.value)),
+                thirdStart: document.getElementById('third-start').value || '',
+                thirdEnd: document.getElementById('third-end').value || '',
+                thirdTimezone: document.getElementById('third-timezone').value || ''
+            };
+        }
+
+        function analyzeDayCoverage(date, dayOfWeek, formData, familyTz) {
+            const dayData = {
+                date: date.format('dddd, MMMM Do'),
+                dayOfWeek: dayOfWeek,
+                coverage: [],
+                gaps: [],
+                backupRules: []
+            };
+            
+            // Check primary coverage
+            const primaryCoverage = getProviderCoverage('primary', dayOfWeek, formData, familyTz);
+            if (primaryCoverage) {
+                dayData.coverage.push({
+                    provider: 'primary',
+                    name: formData.primaryName,
+                    ...primaryCoverage
+                });
+            }
+            
+            // Check secondary coverage
+            if (formData.secondaryName && formData.secondaryTimezone) {
+                const secondaryCoverage = getProviderCoverage('secondary', dayOfWeek, formData, familyTz);
+                if (secondaryCoverage) {
+                    dayData.coverage.push({
+                        provider: 'secondary',
+                        name: formData.secondaryName,
+                        ...secondaryCoverage
+                    });
+                }
+            }
+            
+            // Check third coverage
+            if (formData.thirdEnabled && formData.thirdName && formData.thirdTimezone) {
+                const thirdCoverage = getProviderCoverage('third', dayOfWeek, formData, familyTz);
+                if (thirdCoverage) {
+                    dayData.coverage.push({
+                        provider: 'third',
+                        name: formData.thirdName,
+                        ...thirdCoverage
+                    });
+                }
+            }
+            
+            // Analyze backup logic and gaps
+            dayData.backupRules = generateBackupRules(dayData.coverage);
+            dayData.gaps = findCoverageGaps(dayData.coverage);
+            
+            return dayData;
+        }
+
+        function getProviderCoverage(providerType, dayOfWeek, formData, familyTz) {
+            try {
+                const days = formData[`${providerType}Days`];
+                const start = formData[`${providerType}Start`];
+                const end = formData[`${providerType}End`];
+                const timezone = formData[`${providerType}Timezone`];
+                
+                if (!days.includes(dayOfWeek) || !start || !end || !timezone) {
+                    return null;
+                }
+                
+                // Fallback to simple time conversion if moment timezone fails
+                let startTime, endTime, startMinutes, endMinutes;
+                
+                if (moment.tz && typeof moment.tz === 'function') {
+                    // Use moment.js timezone conversion
+                    const startMoment = moment.tz(`2024-01-01 ${start}`, timezone).tz(familyTz);
+                    const endMoment = moment.tz(`2024-01-01 ${end}`, timezone).tz(familyTz);
+                    
+                    startTime = startMoment.format('h:mm A');
+                    endTime = endMoment.format('h:mm A');
+                    startMinutes = startMoment.hours() * 60 + startMoment.minutes();
+                    endMinutes = endMoment.hours() * 60 + endMoment.minutes();
+                } else {
+                    // Simple fallback without timezone conversion
+                    const [startHour, startMin] = start.split(':').map(Number);
+                    const [endHour, endMin] = end.split(':').map(Number);
+                    
+                    startMinutes = startHour * 60 + startMin;
+                    endMinutes = endHour * 60 + endMin;
+                    
+                    const formatTime = (hour, minute) => {
+                        const period = hour >= 12 ? 'PM' : 'AM';
+                        const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                        const displayMin = minute.toString().padStart(2, '0');
+                        return `${displayHour}:${displayMin} ${period}`;
+                    };
+                    
+                    startTime = formatTime(startHour, startMin);
+                    endTime = formatTime(endHour, endMin);
+                }
+                
+                return {
+                    startTime: startTime,
+                    endTime: endTime,
+                    startMinutes: startMinutes,
+                    endMinutes: endMinutes,
+                    originalTz: timezone
+                };
+            } catch (error) {
+                console.error('Error in getProviderCoverage:', error);
+                return null;
+            }
+        }
+
+        function generateBackupRules(coverage) {
+            const rules = [];
+            
+            if (!coverage || coverage.length === 0) {
+                rules.push({
+                    type: 'no-coverage',
+                    message: 'No providers available this day'
+                });
+                return rules;
+            }
+            
+            const primary = coverage.find(c => c && c.provider === 'primary');
+            const secondary = coverage.find(c => c && c.provider === 'secondary');
+            const third = coverage.find(c => c && c.provider === 'third');
+            
+            if (primary && secondary) {
+                const overlap = calculateTimeOverlap(primary, secondary);
+                if (overlap && overlap.hasOverlap) {
+                    rules.push({
+                        type: 'backup-available',
+                        message: `If ${primary.name || 'Primary'} cancels → ${secondary.name || 'Secondary'} can cover ${overlap.startTime} - ${overlap.endTime}`,
+                        coverage: 'full'
+                    });
+                } else {
+                    rules.push({
+                        type: 'backup-partial',
+                        message: `If ${primary.name || 'Primary'} cancels → ${secondary.name || 'Secondary'} available but different hours (${secondary.startTime} - ${secondary.endTime})`,
+                        coverage: 'partial'
+                    });
+                }
+            }
+            
+            if (secondary && third) {
+                const overlap = calculateTimeOverlap(secondary, third);
+                if (overlap && overlap.hasOverlap) {
+                    rules.push({
+                        type: 'backup-available',
+                        message: `If ${secondary.name || 'Secondary'} cancels → ${third.name || 'Third'} can cover ${overlap.startTime} - ${overlap.endTime}`,
+                        coverage: 'full'
+                    });
+                }
+            }
+            
+            if (coverage.length === 1 && primary) {
+                rules.push({
+                    type: 'no-backup',
+                    message: `If ${primary.name || 'Primary'} cancels → Uncovered gap (${primary.startTime} - ${primary.endTime})`,
+                    coverage: 'none'
+                });
+            }
+            
+            return rules;
+        }
+
+        function calculateTimeOverlap(provider1, provider2) {
+            try {
+                const start1 = provider1.startMinutes;
+                const end1 = provider1.endMinutes;
+                const start2 = provider2.startMinutes;
+                const end2 = provider2.endMinutes;
+                
+                const overlapStart = Math.max(start1, start2);
+                const overlapEnd = Math.min(end1, end2);
+                
+                if (overlapStart < overlapEnd) {
+                    const startHour = Math.floor(overlapStart / 60);
+                    const startMin = overlapStart % 60;
+                    const endHour = Math.floor(overlapEnd / 60);
+                    const endMin = overlapEnd % 60;
+                    
+                    const formatTime = (hour, minute) => {
+                        const period = hour >= 12 ? 'PM' : 'AM';
+                        const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                        const displayMin = minute.toString().padStart(2, '0');
+                        return `${displayHour}:${displayMin} ${period}`;
+                    };
+                    
+                    return {
+                        hasOverlap: true,
+                        startTime: formatTime(startHour, startMin),
+                        endTime: formatTime(endHour, endMin)
+                    };
+                }
+                
+                return { hasOverlap: false };
+            } catch (error) {
+                console.error('Error in calculateTimeOverlap:', error);
+                return { hasOverlap: false };
+            }
+        }
+
+        function findCoverageGaps(coverage) {
+            // Simplified gap analysis - could be enhanced further
+            const gaps = [];
+            
+            if (coverage.length === 0) {
+                gaps.push({
+                    type: 'full-day',
+                    message: 'No coverage available for entire day'
+                });
+            } else if (coverage.length === 1) {
+                gaps.push({
+                    type: 'single-provider',
+                    message: 'Only one provider available - risk of uncovered gaps if they cancel'
+                });
+            }
+            
+            return gaps;
+        }
+
+        function displayBackupPlan(plan) {
+            try {
+                const contentDiv = document.getElementById('backup-plan-content');
+                const duration = plan.formData.dateRange || '7';
+                
+                document.getElementById('plan-subtitle').textContent = `Generated for the next ${duration} days • ${plan.generatedAt || new Date().toLocaleDateString()}`;
+                
+                let html = '<table class="plan-table">';
+                html += '<thead><tr>';
+                html += '<th>Day</th>';
+                html += '<th>Primary Coverage</th>';
+                html += '<th>Backup Options</th>';
+                html += '<th>Status</th>';
+                html += '</tr></thead>';
+                html += '<tbody>';
+                
+                if (plan.planData && plan.planData.length > 0) {
+                    plan.planData.forEach(day => {
+                        html += '<tr>';
+                        html += `<td><strong>${day.date || 'Unknown Date'}</strong></td>`;
+                        
+                        // Primary coverage
+                        const primary = day.coverage ? day.coverage.find(c => c && c.provider === 'primary') : null;
+                        if (primary) {
+                            html += `<td>${primary.name || 'Primary Provider'}<br><small>${primary.startTime || 'N/A'} - ${primary.endTime || 'N/A'}</small></td>`;
+                        } else {
+                            html += '<td><span class="coverage-danger">Not Available</span></td>';
+                        }
+                        
+                        // Backup options
+                        const backups = day.coverage ? day.coverage.filter(c => c && c.provider !== 'primary') : [];
+                        if (backups.length > 0) {
+                            html += '<td>';
+                            backups.forEach(backup => {
+                                if (backup) {
+                                    html += `${backup.name || 'Backup Provider'}<br><small>${backup.startTime || 'N/A'} - ${backup.endTime || 'N/A'}</small><br>`;
+                                }
+                            });
+                            html += '</td>';
+                        } else {
+                            html += '<td><span class="coverage-danger">No Backup</span></td>';
+                        }
+                        
+                        // Status
+                        const coverageCount = day.coverage ? day.coverage.length : 0;
+                        if (coverageCount === 0) {
+                            html += '<td><span class="coverage-danger">Uncovered</span></td>';
+                        } else if (coverageCount === 1) {
+                            html += '<td><span class="coverage-warning">At Risk</span></td>';
+                        } else {
+                            html += '<td><span class="coverage-good">Protected</span></td>';
+                        }
+                        
+                        html += '</tr>';
+                    });
+                } else {
+                    html += '<tr><td colspan="4">No plan data available</td></tr>';
+                }
+                
+                html += '</tbody></table>';
+                
+                // Add backup rules summary
+                html += '<div style="margin-top: 25px;">';
+                html += '<h4 style="color: #2E86AB; margin-bottom: 15px;">📋 Backup Rules Summary</h4>';
+                
+                if (plan.planData && plan.planData.length > 0) {
+                    const allRules = plan.planData.flatMap(day => day.backupRules || []);
+                    const uniqueRules = [...new Set(allRules.map(rule => rule ? rule.message : 'No rule available'))];
+                    
+                    if (uniqueRules.length > 0) {
+                        uniqueRules.forEach(rule => {
+                            html += `<div class="gap-alert">• ${rule}</div>`;
+                        });
+                    } else {
+                        html += '<div class="gap-alert">• No specific backup rules generated</div>';
+                    }
+                } else {
+                    html += '<div class="gap-alert">• No backup rules available</div>';
+                }
+                
+                html += '</div>';
+                
+                contentDiv.innerHTML = html;
+                
+                // Show results and CTA
+                document.getElementById('resultsSection').style.display = 'block';
+                document.getElementById('ctaSection').style.display = 'block';
+                
+                // Scroll to results
+                document.getElementById('resultsSection').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            } catch (error) {
+                console.error('Error in displayBackupPlan:', error);
+                throw new Error('Failed to display backup plan: ' + error.message);
+            }
+        }
+
+        function showLoading(show) {
+            const button = document.getElementById('generate-btn');
+            const btnText = document.getElementById('btn-text');
+            const spinner = document.getElementById('loading-spinner');
+            
+            if (show) {
+                button.disabled = true;
+                btnText.textContent = 'Analyzing Coverage...';
+                spinner.style.display = 'inline-block';
+            } else {
+                button.disabled = false;
+                btnText.textContent = 'Generate Backup Plan';
+                spinner.style.display = 'none';
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('form-error');
+            errorDiv.innerHTML = message;
+            errorDiv.style.display = 'block';
+            errorDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideError() {
+            document.getElementById('form-error').style.display = 'none';
+        }
+
+        function resetForm() {
+            document.getElementById('backupForm').reset();
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('ctaSection').style.display = 'none';
+            
+            // Reset third provider toggle
+            const toggle = document.getElementById('third-toggle');
+            toggle.classList.remove('active');
+            document.getElementById('third-provider-fields').style.display = 'none';
+            
+            hideError();
+            initializeForm();
+        }
+
+        function editPlan() {
+            document.querySelector('.form-section').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        function downloadPDF() {
+            if (!currentPlan) return;
+            
+            const originalTitle = document.title;
+            document.title = `Wolfmates Backup Plan - ${moment().format('YYYY-MM-DD')}`;
+            
+            // Add generation info
+            const planHeader = document.querySelector('.plan-header');
+            const dateInfo = document.createElement('p');
+            dateInfo.style.fontSize = '0.9rem';
+            dateInfo.style.opacity = '0.9';
+            dateInfo.innerHTML = `<strong>Generated:</strong> ${currentPlan.generatedAt}`;
+            planHeader.appendChild(dateInfo);
+            
+            window.print();
+            
+            // Restore
+            document.title = originalTitle;
+            dateInfo.remove();
+        }
+
+        function exportCSV() {
+            if (!currentPlan) return;
+            
+            let csv = 'Day,Date,Primary Coverage,Backup Options,Status\n';
+            
+            currentPlan.planData.forEach(day => {
+                const primary = day.coverage.find(c => c.provider === 'primary');
+                const backups = day.coverage.filter(c => c.provider !== 'primary');
+                
+                const primaryText = primary ? `${primary.name} (${primary.startTime} - ${primary.endTime})` : 'Not Available';
+                const backupText = backups.map(b => `${b.name} (${b.startTime} - ${b.endTime})`).join('; ') || 'No Backup';
+                const status = day.coverage.length === 0 ? 'Uncovered' : 
+                             day.coverage.length === 1 ? 'At Risk' : 'Protected';
+                
+                csv += `"${dayNames[day.dayOfWeek]}","${day.date}","${primaryText}","${backupText}","${status}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wolfmates-backup-plan-${moment().format('YYYY-MM-DD')}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+
+    <!-- Placeholder for Google Analytics / Tracking -->
+    <!-- <script>
+        // Insert Google Analytics or other tracking code here
+        // gtag('config', 'GA_TRACKING_ID');
+    </script> -->
+</body>
+</html>
